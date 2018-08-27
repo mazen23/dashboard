@@ -1,10 +1,10 @@
 <div class="wrapper">
 
-    <div class="head">
+    <section class="head">
         <h1 class="title">Castle Dashboard</h1>
-    </div>
+    </section>
 
-    <div class="content">
+    <section class="content">
         <div class="content-head">
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addProjectModal">
                 Add Project
@@ -22,8 +22,8 @@
                         <th>STD (%)</th>
                         <th>Coverage (%)</th>
                         <th>Update Date</th>
-                        <th>Refresh Date</th>
                         <th>SW Version</th>
+                        <th>Frequency</th>
                         <th>SVN URL</th>
                     </tr>
                 </thead>
@@ -31,8 +31,10 @@
                     {{#each projects}}
                     <tr>
                         <td class="btn-cell">
-                            <button type="button" title="Generate the report" class="btn btn-xs btn-default">Update</button>
-                            <button type="button" title="execute" class="btn btn-xs btn-basic">Execute</button>
+                            <Button class="btn-form btn btn-sm btn-default" type="button" data-toggle="modal" data-id="{{ this._id }}" data-name="{{ this.proj_name }}"
+                                data-url="{{ this.svn_url }}" data-freq="{{ this.frequency }}" data-target="#updateProjectModal">
+                                Edit
+                            </Button>
                         </td>
                         <td>{{ this.proj_name }}</td>
                         <td>{{ this.num_of_Tests }}</td>
@@ -40,48 +42,99 @@
                         <td>{{ this.num_failed }}</td>
                         <td>{{ this.num_std }}</td>
                         <td>{{ this.coverage }}</td>
-                        <td>{{ this.update_data }}</td>
-                        <td>{{ this.refresh_date }}</td>
+                        <td>{{ this.updated }}</td>
                         <td>{{ this.sw_version }}</td>
+                        {{#with (lookup ../freqConv this.frequency)}}
+                        <td>{{value}}</td>
+                        {{/with}}
                         <td>{{ this.svn_url }}</td>
                     </tr>
                     {{/each}}
                 </tbody>
             </table>
         </div>
-    </div>
+    </section>
 
     <div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header text-center">
-                    <h4 class="modal-title w-100 font-weight-bold">Add Project</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body mx-3">
-                    <div class="md-form mb-5">
-                        <input type="text" id="form3" class="form-control validate" placeholder="Enter project name">
-                        <label data-error="wrong" data-success="right" for="form3"></label>
+                <form action="/addProject" method="post">
+                    <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">Add Project</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                            <input type="text" class="form-control validate" placeholder="Enter project name" name="name">
+                        </div>
 
-                    <div class="md-form mb-4">
-                        <input type="text" id="form2" class="form-control validate" placeholder="Enter project url">
-                        <label data-error="wrong" data-success="right" for="form2"></label>
+                        <div class="md-form mb-4">
+                            <input type="text" class="form-control validate" placeholder="Enter project url" name="url">
+                        </div>
+
+                        <div class="md-form mb-4">
+                            <div class="md-form mb-4">
+                                <select class="form-control" name='frequency'>
+                                    <option value="0">On Commit</option>
+                                    <option value="1">Daily</option>
+                                    <option value="2">Weekly</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="modal-footer d-flex justify-content-center">
-                    <button type="btn" class="btn btn-white" data-dismiss="modal">Close</button>
-                    <button class="btn btn-indigo">Sumbit <i class="fa fa-paper-plane-o ml-1"></i></button>
-                </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="btn" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button class="btn btn-indigo">Sumbit <i class="fa fa-paper-plane-o ml-1"></i></button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <div class="footer">
-        <p><strong>Copyright</strong> Valeo - VIS &copy; 2017</p>
+    <div class="modal fade" id="updateProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form action="/updateProject" method="post">
+                    <div class="modal-header text-center">
+                        <h4 class="modal-title w-100 font-weight-bold">update Project</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body mx-3">
+                        <div class="md-form mb-5">
+                            <input type="text" class="form-control validate" placeholder="Enter project name" name="name">
+                        </div>
+
+                        <div class="md-form mb-4">
+                            <input type="text" class="form-control validate" placeholder="Enter project url" name="url">
+                        </div>
+
+                        <div class="md-form mb-4">
+                            <div class="md-form mb-4">
+                                <select class="form-control" name='frequency'>
+                                    <option value="0">On Commit</option>
+                                    <option value="1">Daily</option>
+                                    <option value="2">Weekly</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="btn" class="btn btn-white" data-dismiss="modal">Close</button>
+                        <button class="btn btn-indigo">Submit <i class="fa fa-paper-plane-o ml-1"></i></button>
+                    </div>
+                    <input type="hidden" name="id" />
+                </form>
+            </div>
+        </div>
     </div>
+
+    <section class="footer">
+        <p><strong>Copyright</strong> Valeo - VIS &copy; 2017</p>
+    </section>
 </div>
 
 <script>
@@ -93,26 +146,14 @@
         });
     });
 
-    function updateProject(id) {
-        $.ajax({
-            type: "GET",
-            url: 'http://cai1-sv00075:8080/job/GenerateProject/buildWithParameters',
-            data: {
-                token: 'dashboardToken',
-                PROJECT_NAME: id
-            },
-            crossDomain: true
-        });
-    }
-
-    function runProject(id, el) {
-        $.ajax({
-            type: "GET",
-            url: 'http://cai1-sv00075:8080/job/RunProject/buildWithParameters',
-            data: {
-                token: 'dashboardToken',
-                PROJECT_NAME: id
-            }
-        });
-    }
+    $('#updateProjectModal').on('show.bs.modal', function (e) {
+        var name = $(e.relatedTarget).data('name');
+        var url = $(e.relatedTarget).data('url');
+        var frequency = $(e.relatedTarget).data('freq');
+        var id = $(e.relatedTarget).data('id');
+        $(e.currentTarget).find('input[name="name"]').val(name);
+        $(e.currentTarget).find('input[name="url"]').val(url);
+        $(e.currentTarget).find('select[name="frequency"]').val(frequency);
+        $(e.currentTarget).find('input[name="id"]').val(id);
+    });
 </script>
