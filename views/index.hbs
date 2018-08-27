@@ -1,97 +1,118 @@
-<div id="wrapper">
+<div class="wrapper">
 
-    <div id="page-wrapper" class="gray-bg">
-        <div class="row border-bottom">
-            <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
-                <ul class="nav navbar-top-links navbar-right">
-                    <li>
-                        <span class="welcome-message">VIS - VLS Dashboard</span>
-                    </li>
+    <div class="head">
+        <h1 class="title">Castle Dashboard</h1>
+    </div>
 
-                </ul>
-
-            </nav>
+    <div class="content">
+        <div class="content-head">
+            <button type="button" class="button button-large">
+                Add Project
+            </button>
         </div>
-        <div class="row wrapper border-bottom white-bg page-heading">
-            <div class="col-lg-10">
-                <h2>Castle Test Reports</h2>
-
-            </div>
-            <div class="col-lg-2">
-
-            </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover dataTables">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Project Name</th>
+                        <th># of Tests</th>
+                        <th># OK (%)</th>
+                        <th># NOK (%)</th>
+                        <th>STD (%)</th>
+                        <th>Coverage (%)</th>
+                        <th>Update Date</th>
+                        <th>Refresh Date</th>
+                        <th>SW Version</th>
+                        <th>SVN URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each projects}}
+                    <tr>
+                        <td>
+                            <button type="button" title="Generate the report" class="button button-small">Update</button>
+                            <button type="button" title="execute" class="button button-small">Execute</button>
+                        </td>
+                        <td>{{ this.proj_name }}</td>
+                        <td>{{ this.num_of_Tests }}</td>
+                        <td>{{ this.num_passed }}</td>
+                        <td>{{ this.num_failed }}</td>
+                        <td>{{ this.num_std }}</td>
+                        <td>{{ this.coverage }}</td>
+                        <td>{{ this.update_data }}</td>
+                        <td>{{ this.refresh_date }}</td>
+                        <td>{{ this.sw_version }}</td>
+                        <td>{{ this.svn_url }}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
         </div>
-        <div class="wrapper wrapper-content animated fadeInRight">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="ibox float-e-margins">
-                        <div class="ibox-title">
-                            <div class="ibox-tools">
-                            </div>
-                        </div>
-                        <div class="ibox-content">
-                            <div class="row">
-                                <div class="col-sm-10 m-b-xs">
-                                </div>
-                                <div class="col-sm-2">
-                                    <div class="input-group">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal6">
-                                            Add Project
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="table-responsive">
-                                <table class="table table-striped table-bordered table-hover dataTables">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Project Name</th>
-                                            <th># of Tests</th>
-                                            <th># OK (%)</th>
-                                            <th># NOK (%)</th>
-                                            <th>STD (%)</th>
-                                            <th>Coverage (%)</th>
-                                            <th>Update Date</th>
-                                            <th>Refresh Date</th>
-                                            <th>SW Version</th>
-                                            <th>SVN URL</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{#each projects}}
-                                        <tr>
-                                            <td>
-                                                <button type="button" class="btn btn-xs btn-primary sweetalertbutton ld-ext-right " id="{{this.name}}" title="Generate the report">Update</button>
-                                                <button type="button" class="btn btn-xs btn-default" title="execute" onclick="runProject('{{this.name}}' ,this)">Execute</button>
-                                            </td>
-                                            <td>{{ this.proj_name }}</td>
-                                            <td>{{ this.num_of_Tests }}</td>
-                                            <td>{{ this.num_passed }}</td>
-                                            <td>{{ this.num_failed }}</td>
-                                            <td>{{ this.num_std }}</td>
-                                            <td>{{ this.coverage }}</td>
-                                            <td>{{ this.update_data }}</td>
-                                            <td>{{ this.refresh_date }}</td>
-                                            <td>{{ this.sw_version }}</td>
-                                            <td>{{ this.svn_url }}</td>
-                                        </tr>
-                                        {{/each}}
-                                    </tbody>
-                                </table>
-                            </div>
+    </div>
 
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        <div class="footer">
-            <div class="pull-right">
-                <strong>Copyright</strong> Valeo - VIS &copy; 2017
-            </div>
-        </div>
-
+    <div class="footer">
+        <p><strong>Copyright</strong> Valeo - VIS &copy; 2017</p>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('.dataTables').DataTable({
+            "dom": 'lTfigtp',
+            "paging": true,
+            "pagingType": 'full_numbers',
+            "tableTools": {
+                "sSwfPath": "javascripts/dataTables/swf/copy_csv_xls_pdf.swf"
+            }
+        });
+
+        //            $('.sweetalertbutton').click(function (e) {
+        $('.dataTables').on("click", ".sweetalertbutton", function (e) {
+            var id = $(e.currentTarget).attr("id");
+            console.log(id);
+            swal({
+                title: "Are you sure?",
+                text: "The castle report will be re-generated!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Ok!",
+                closeOnConfirm: false
+            }, function () {
+                //                    document.getElementById("updateproject_" + id).submit();
+                updateProject(id);
+                swal.close()
+            });
+        });
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    });
+
+    function updateProject(id) {
+        $.ajax({
+            type: "GET",
+            url: 'http://cai1-sv00075:8080/job/GenerateProject/buildWithParameters',
+            data: {
+                token: 'dashboardToken',
+                PROJECT_NAME: id
+            },
+            crossDomain: true
+        });
+    }
+
+    function runProject(id, el) {
+        $.ajax({
+            type: "GET",
+            url: 'http://cai1-sv00075:8080/job/RunProject/buildWithParameters',
+            data: {
+                token: 'dashboardToken',
+                PROJECT_NAME: id
+            }
+        });
+    }
+</script>
