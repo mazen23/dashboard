@@ -9,10 +9,6 @@ html, body {
   height:100%;
 }
 
-a {
-  color: #00B7FF;
-}
-
 .wrapper{
   display: grid;
   grid-gap: 30px;
@@ -26,6 +22,8 @@ a {
   color: #1AB394;
   box-shadow: 0 1px 1px -1px rgba(0, 0, 0, 0.34), 0 0px 6px 0px rgba(0, 0, 0, 0.14);
   background-color: rgb(255, 255, 255);
+  padding-bottom: 20px;
+  border-bottom: 5px solid #1AB394;
 }
 
 .content {  
@@ -61,24 +59,7 @@ a {
   padding: 30px;
 }
 
-.button {
-  background-color: #1AB394;
-  border-radius: 3px;
-  color: white;
-  cursor: pointer;
-  border: 1px solid #1AB394;
-}
-
-.button:hover {
-  background-color: rgb(20, 150, 124);
-}
-
-.button-large {
-  font-size: 16px;
-  padding: 0.5em 1em;
-}
-
-.button-small {
-  font-size: 12px;
-  padding: 0.2em 0.8em;
+.btn-cell {
+  display: grid;
+  grid-gap: 5px;
 }

@@ -6,7 +6,7 @@
 
     <div class="content">
         <div class="content-head">
-            <button type="button" class="button button-large">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addProjectModal">
                 Add Project
             </button>
         </div>
@@ -30,9 +30,9 @@
                 <tbody>
                     {{#each projects}}
                     <tr>
-                        <td>
-                            <button type="button" title="Generate the report" class="button button-small">Update</button>
-                            <button type="button" title="execute" class="button button-small">Execute</button>
+                        <td class="btn-cell">
+                            <button type="button" title="Generate the report" class="btn btn-xs btn-default">Update</button>
+                            <button type="button" title="execute" class="btn btn-xs btn-basic">Execute</button>
                         </td>
                         <td>{{ this.proj_name }}</td>
                         <td>{{ this.num_of_Tests }}</td>
@@ -51,6 +51,34 @@
         </div>
     </div>
 
+    <div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Add Project</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-3">
+                    <div class="md-form mb-5">
+                        <input type="text" id="form3" class="form-control validate" placeholder="Enter project name">
+                        <label data-error="wrong" data-success="right" for="form3"></label>
+                    </div>
+
+                    <div class="md-form mb-4">
+                        <input type="text" id="form2" class="form-control validate" placeholder="Enter project url">
+                        <label data-error="wrong" data-success="right" for="form2"></label>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="btn" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button class="btn btn-indigo">Sumbit <i class="fa fa-paper-plane-o ml-1"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="footer">
         <p><strong>Copyright</strong> Valeo - VIS &copy; 2017</p>
     </div>
@@ -59,37 +87,9 @@
 <script>
     $(document).ready(function () {
         $('.dataTables').DataTable({
-            "dom": 'lTfigtp',
-            "paging": true,
-            "pagingType": 'full_numbers',
-            "tableTools": {
-                "sSwfPath": "javascripts/dataTables/swf/copy_csv_xls_pdf.swf"
-            }
-        });
-
-        //            $('.sweetalertbutton').click(function (e) {
-        $('.dataTables').on("click", ".sweetalertbutton", function (e) {
-            var id = $(e.currentTarget).attr("id");
-            console.log(id);
-            swal({
-                title: "Are you sure?",
-                text: "The castle report will be re-generated!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Ok!",
-                closeOnConfirm: false
-            }, function () {
-                //                    document.getElementById("updateproject_" + id).submit();
-                updateProject(id);
-                swal.close()
-            });
-        });
-
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+            "columnDefs": [
+                { "width": "5%", "targets": 0 }
+            ]
         });
     });
 
