@@ -2,18 +2,23 @@ const mongoose = require('mongoose');
 
 const projectSchema = mongoose.Schema(
   {
-    proj_name: String,
-    num_of_Tests: { type: String, default: 'N/A' },
-    num_passed: { type: String, default: 'N/A' },
-    num_failed: { type: String, default: 'N/A' },
-    num_std: { type: String, default: 'N/A' },
-    coverage: { type: String, default: 'N/A' },
+    proj_name: { type: String, required: true },
     updated: { type: Date, default: Date.now() },
-    sw_version: { type: String, default: 'N/A' },
-    frequency: { type: String, default: 'N/A' },
-    svn_url: String
+    freq_id: { type: Number, min: 0, max: 3, required: true },
+    svn_url: { type: String, required: true }
   },
-  { collection: 'projects' }
+  {
+    collection: 'projects', toObject: { virtuals: true } , toJSON: { virtuals: true }
+  }
 );
+
+projectSchema.virtual('frequency').get(function () {
+  const freqs = ['Manual', 'OnCommit', 'Daily', 'Weekly'];
+  return freqs[this.freq_id];
+});
+
+projectSchema.virtual('url').get(function () {
+  return 'http://localhost:3000/api/projects/' + this._id;
+});
 
 module.exports = mongoose.model('Project', projectSchema);
