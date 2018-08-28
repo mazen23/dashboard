@@ -1,4 +1,4 @@
-var ProjectData = require('../models/project');
+const ProjectData = require('../models/project');
 
 exports.project_list = function (req, res) {
     ProjectData.find()
@@ -34,12 +34,12 @@ exports.project_detail = function (req, res) {
 };
 
 exports.project_create = function (req, res) {
-    const ProjectData = new ProjectData({
+    const Project = new ProjectData({
         proj_name: req.body.name,
         freq_id: req.body.freq_id,
         svn_url: req.body.url
     });
-    ProjectData.save()
+    Project.save()
         .then(result => {
             res.status(201).json({
                 message: 'Handling POST requests to /Projects',

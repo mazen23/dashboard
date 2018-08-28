@@ -1,4 +1,4 @@
-var ReportData = require('../models/report');
+const ReportData = require('../models/report');
 
 exports.report_list = function (req, res) {
     ReportData.find()
