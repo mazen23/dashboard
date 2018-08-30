@@ -15,12 +15,20 @@ const reportSchema = mongoose.Schema(
     }
 );
 
-reportSchema.virtual('url').get(function () {
+reportSchema.virtual('url_api').get(function () {
     return 'http://localhost:3000/api/reports/' + this._id;
 });
 
-reportSchema.virtual('project_url').get(function () {
+reportSchema.virtual('project_url_api').get(function () {
     return 'http://localhost:3000/api/projects/' + this.project_id;
+});
+
+reportSchema.virtual('url').get(function () {
+    return 'http://localhost:3000/reports/' + this._id;
+});
+
+reportSchema.virtual('project_url').get(function () {
+    return 'http://localhost:3000/projects/' + this.project_id;
 });
 
 module.exports = mongoose.model('Report', reportSchema);

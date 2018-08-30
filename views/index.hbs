@@ -1,148 +1,100 @@
-<div class="wrapper">
+<section class="content">
+    <div class="content-head">
+        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addProjectModal">
+            Add Project
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover dataTables">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Project Name</th>
+                    <th>Update Date</th>
+                    <th>Frequency</th>
+                    <th>SVN URL</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</section>
 
-    <section class="head">
-        <h1 class="title">Castle Dashboard</h1>
-    </section>
-
-    <section class="content">
-        <div class="content-head">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addProjectModal">
-                Add Project
-            </button>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered table-hover dataTables">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Project Name</th>
-                        <th>Update Date</th>
-                        <th>Frequency</th>
-                        <th>SVN URL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{#each projects}}
-                    <tr>
-                        <td class="btn-cell">
-                            <Button class="btn-form btn btn-sm btn-default" type="button" data-toggle="modal" data-id="{{ this._id }}" data-name="{{ this.proj_name }}"
-                                data-url="{{ this.svn_url }}" data-freq="{{ this.freq_id }}" data-target="#updateProjectModal">
-                                Edit
-                            </Button>
-                        </td>
-                        <td>{{ this.proj_name }}</td>
-                        <td>{{ this.updated }}</td>
-                        <td>{{ this.frequency }}</td>
-                        <td>{{ this.svn_url }}</td>
-                    </tr>
-                    {{/each}}
-                </tbody>
-            </table>
-        </div>
-    </section>
-
-    <div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form action="/api/projects/" method="post">
-                    <div class="modal-header text-center">
-                        <h4 class="modal-title w-100 font-weight-bold">Add Project</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+<div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/api/projects/" method="post" id="addProjectForm">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Add Project</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-3">
+                    <div class="md-form mb-5">
+                        <input type="text" class="form-control validate" placeholder="Enter project name" name="name">
                     </div>
-                    <div class="modal-body mx-3">
-                        <div class="md-form mb-5">
-                            <input type="text" class="form-control validate" placeholder="Enter project name" name="name">
-                        </div>
 
+                    <div class="md-form mb-4">
+                        <input type="text" class="form-control validate" placeholder="Enter project url" name="url">
+                    </div>
+
+                    <div class="md-form mb-4">
                         <div class="md-form mb-4">
-                            <input type="text" class="form-control validate" placeholder="Enter project url" name="url">
-                        </div>
-
-                        <div class="md-form mb-4">
-                            <div class="md-form mb-4">
-                                <select class="form-control" name='freq_id'>
-                                    <option value="0">Manual</option>
-                                    <option value="1">On Commit</option>
-                                    <option value="2">Daily</option>
-                                    <option value="3">Weekly</option>
-                                </select>
-                            </div>
+                            <select class="form-control" name='freq_id'>
+                                <option value="0">Manual</option>
+                                <option value="1">On Commit</option>
+                                <option value="2">Daily</option>
+                                <option value="3">Weekly</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="btn" class="btn btn-white" data-dismiss="modal">Close</button>
-                        <button class="btn btn-indigo">Sumbit <i class="fa fa-paper-plane-o ml-1"></i></button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="btn" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button class="btn btn-indigo">Sumbit <i class="fa fa-paper-plane-o ml-1"></i></button>
+                </div>
+            </form>
         </div>
     </div>
-
-    <div class="modal fade" id="updateProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form action="/api/projects/" method="patch" name="updateForm">
-                    <div class="modal-header text-center">
-                        <h4 class="modal-title w-100 font-weight-bold">update Project</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body mx-3">
-                        <div class="md-form mb-5">
-                            <input type="text" class="form-control validate" placeholder="Enter project name" name="name">
-                        </div>
-
-                        <div class="md-form mb-4">
-                            <input type="text" class="form-control validate" placeholder="Enter project url" name="url">
-                        </div>
-
-                        <div class="md-form mb-4">
-                            <div class="md-form mb-4">
-                                <select class="form-control" name='freq_id'>
-                                    <option value="0">Manual</option>
-                                    <option value="1">On Commit</option>
-                                    <option value="2">Daily</option>
-                                    <option value="3">Weekly</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button type="btn" class="btn btn-white" data-dismiss="modal">Close</button>
-                        <button class="btn btn-indigo">Submit <i class="fa fa-paper-plane-o ml-1"></i></button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <section class="footer">
-        <p><strong>Copyright</strong> Valeo - VIS &copy; 2017</p>
-    </section>
 </div>
 
-<script>
-    $(document).ready(function () {
-        $('.dataTables').DataTable({
-            "columnDefs": [
-                { "width": "5%", "targets": 0 }
-            ]
-        });
-    });
+<div class="modal fade" id="updateProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="/api/projects/" method="patch" id="updateProjectForm" name="updateForm">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Edit Project</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-3">
+                    <div class="md-form mb-5">
+                        <input type="text" class="form-control validate" placeholder="Enter project name" name="name">
+                    </div>
 
-    $('#updateProjectModal').on('show.bs.modal', function (e) {
-        var name = $(e.relatedTarget).data('name');
-        var url = $(e.relatedTarget).data('url');
-        var frequency = $(e.relatedTarget).data('freq');
-        var id = $(e.relatedTarget).data('id');
-        var path = "/api/projects/" + id;
-        $(e.currentTarget).find('input[name="name"]').val(name);
-        $(e.currentTarget).find('input[name="url"]').val(url);
-        $(e.currentTarget).find('select[name="freq_id"]').val(frequency);
-        $(e.currentTarget).find('input[name="id"]').val(id);
-        $(e.currentTarget).find('form[name="updateForm"]')[0].action = path;
-    });
-</script>
+                    <div class="md-form mb-4">
+                        <input type="text" class="form-control validate" placeholder="Enter project url" name="url">
+                    </div>
+
+                    <div class="md-form mb-4">
+                        <div class="md-form mb-4">
+                            <select class="form-control" name='freq_id'>
+                                <option value="0">Manual</option>
+                                <option value="1">On Commit</option>
+                                <option value="2">Daily</option>
+                                <option value="3">Weekly</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="btn" class="btn btn-white" data-dismiss="modal">Close</button>
+                    <button class="btn btn-indigo">Submit <i class="fa fa-paper-plane-o ml-1"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

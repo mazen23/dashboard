@@ -1,0 +1,13 @@
+<section class="content">
+    <div class="content-head">
+      <h1>{{ project.proj_name }}</h1>
+    </div>
+    <div>
+        <button type="button" class="btn btn-default generateButton" data-request="/api/projects/generate/{{project.proj_name}}">
+            Generate
+        </button>
+        <button type="button" class="btn btn-default runButton" data-request="/api/projects/run/{{project.proj_name}}">
+            Run
+        </button>
+    </div>
+</section>

@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const hbs = require('express-handlebars');
 const mongoose = require('mongoose');
+const kue = require("kue");
 
 const indexRouter = require('./routes/index');
 const projectsRouter = require('./routes/projects');
@@ -42,6 +43,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api/projects', projectsRouter);
 app.use('/api/reports', reportsRouter);
+app.use("/kue-ui", kue.app);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

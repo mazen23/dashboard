@@ -17,8 +17,12 @@ projectSchema.virtual('frequency').get(function () {
   return freqs[this.freq_id];
 });
 
-projectSchema.virtual('url').get(function () {
+projectSchema.virtual('url_api').get(function () {
   return 'http://localhost:3000/api/projects/' + this._id;
+});
+
+projectSchema.virtual('url').get(function () {
+  return 'http://localhost:3000/projects/' + this._id;
 });
 
 module.exports = mongoose.model('Project', projectSchema);

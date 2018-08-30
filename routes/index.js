@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-const projectData = require('../models/project')
+const ProjectData = require('../models/project')
 
 router.get('/projects', function (req, res, next) {
-  projectData.find()
+  ProjectData.find()
     .then(function (doc) {
       res.render('index', { projects: doc })
     })
@@ -21,8 +21,13 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/projects/:projectId', function (req, res, next) {
-  res.render('/projects/' + projectId);
-  //todo
+  ProjectData.findById(req.params.projectId, (err, project) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({ error: err });
+    }
+    res.render('project', {project :project});
+  });
 });
 
 module.exports = router;

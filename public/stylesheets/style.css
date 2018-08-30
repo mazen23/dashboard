@@ -35,6 +35,11 @@ html, body {
   font-size: 14px;
 }
 
+.dataTables {
+   width: 100% !important;
+   margin: 0px !important;
+}
+
 .footer {
   display: flex;
   flex-direction: row-reverse;
@@ -60,4 +65,10 @@ html, body {
 .btn-form {
   width: 100%;
   margin: 5px 0px !important;
+}
+
+a {
+  color:#1AB394 !important;
+  font-weight: 700 !important;
+  font-size: 16px;
 }
