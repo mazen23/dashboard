@@ -1,8 +1,8 @@
 <section class="content">
     <div class="content-head">
-      <h1>{{ project.proj_name }}</h1>
+        <h1 class="prim-color">{{ project.proj_name }}</h1>
     </div>
-    <div>
+    <div class="left-content">
         <button type="button" class="btn btn-default generateButton" data-request="/api/projects/generate/{{project.proj_name}}">
             Generate
         </button>
@@ -10,4 +10,12 @@
             Run
         </button>
     </div>
+    <div>
+        {{#each people}}
+        <div>
+        </div>
+        {{/each}}
+    </div>
+
+
 </section>

@@ -1,6 +1,5 @@
 const ProjectData = require('../models/project');
 const http = require('http');
-const querystring = require('querystring');
 const kue = require("kue");
 const queue = kue.createQueue();
 
@@ -129,48 +128,11 @@ exports.project_run = (req, res) => {
             console.log('\r  job #' + job.id + ' ' + progress + '% complete with data ', data);
             
         });
-        res.send(200);
+        res.sendStatus(200);
 };
 
 exports.project_generate = (req, res) => {
-    const name = req.params.ProjectName;
-    const path = 'http://cai1-sv00075:8080/job/GenerateProject/buildWithParameters';
-    const postData = querystring.stringify({
-        token: 'dashboardToken',
-        PROJECT_NAME: name
-    });
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(postData)
-        }
-    };
-    const request = http.request(path, options, (response) => {
-        console.log('STATUS: ' + response.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(response.headers));
-
-        let str = '';
-        response.on('data', function (chunk) {
-            str += chunk;
-        });
-        response.on('end', function () {
-            res.status(200).json({
-                statusbo: "sucess"
-            });
-        });
-    });
-
-    request.on('error', (e) => {
-        console.error(`problem with request: ${e}`);
-        res.status(500).json({
-            error: e
-        });
-    });
-
-    request.write(postData);
-
-    request.end();
+    
 };
 
 queue.process("Report Generation", (job, done) => {
@@ -179,28 +141,35 @@ queue.process("Report Generation", (job, done) => {
 
     
     const name = job.data.title;
-    const path = 'http://cai1-sv00075:8080/job/GenerateProject/buildWithParameters';
-    const postData = querystring.stringify({
-        token: 'dashboardToken',
-        PROJECT_NAME: name
-    });
+    const path = 'http://cai1-sv00075:8080/blue/rest/organizations/jenkins/pipelines/GenerateProject/runs/';
+    const postData = JSON.stringify(
+        {
+            "parameters" : 
+        [
+            {
+            "name" : "PROJECT_NAME",
+            "value" : name
+            }
+        ]
+        });
     const options = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': Buffer.byteLength(postData)
-        }
+            'Content-Type': 'application/json',
+                },
+                
     };
     const request = http.request(path, options, (response) => {
         console.log('STATUS: ' + response.statusCode);
         console.log('HEADERS: ' + JSON.stringify(response.headers));
 
+        response.setEncoding('utf8');
         let str = '';
         response.on('data', function (chunk) {
             str += chunk;
         });
         response.on('end', function () {
-            console.log("hello world " + str);
+            console.log(`BODY: ${str}`);
 
             done();
         });
