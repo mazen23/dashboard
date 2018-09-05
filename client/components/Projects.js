@@ -11,10 +11,17 @@ class Projects extends React.Component {
     this.state = {
       data: [],
       loading: true,
-      showModal: false
+      showModal: false,
+      Freq: 0,
+      Url: "",
+      Name: ""
     };
   }
   componentDidMount() {
+    this.updateTable();
+  }
+
+  updateTable = () => {
     this.setState({ loading: true });
     axios.get("/api/projects").then(response => {
       this.setState({
@@ -22,9 +29,52 @@ class Projects extends React.Component {
         loading: false
       });
     });
-  }
+  };
 
-  toggleModal = () => this.setState({ showModal: !this.state.showModal });
+  handleNameChange = e => {
+    this.setState({ Name: e.target.value });
+  };
+
+  handleUrlChange = e => {
+    this.setState({ Url: e.target.value });
+  };
+
+  handleFreqChange = e => {
+    this.setState({ Freq: e.target.value });
+  };
+
+  toggleModal = e => {
+    e.preventDefault();
+    this.setState({ showModal: !this.state.showModal });
+  };
+
+  submitForm = e => {
+    e.preventDefault();
+    if (this.state.Url === "" || this.state.Name === "") {
+      console.log("invalid parameters.");
+      return;
+    }
+    axios
+      .post("/api/projects", {
+        name: this.state.Name,
+        url: this.state.Url,
+        freq_id: this.state.Freq
+      })
+      .then(response => {
+        console.log(response);
+        this.updateTable();
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    this.setState({
+      showModal: !this.state.showModal,
+      Freq: 0,
+      Url: "",
+      Name: ""
+    });
+  };
+
   render() {
     const { data, loading, showModal } = this.state;
     return (
@@ -80,7 +130,11 @@ class Projects extends React.Component {
                         backgroundColor: "#dadada",
                         display: "flex"
                       }}
-                      title={{${row.original.report_id.num_ok_perc}%}}
+                      title={`${row.original.report_id.num_ok_perc}% Passed, ${
+                        row.original.report_id.num_nok_perc
+                      }% Failed, ${
+                        row.original.report_id.num_np_perc
+                      }% Not Performed `}
                     >
                       <div
                         style={{
@@ -208,47 +262,72 @@ class Projects extends React.Component {
         </div>
         {showModal ? (
           <Modal>
-            <form action="/api/projects/" method="post" id="addProjectForm">
-              <div>
-                <h4>Add Project</h4>
-                <button type="button" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+            <form onSubmit={this.toggleModal}>
+              <div className="modal-header">
+                <h4 className="modal-title">Add Project</h4>
               </div>
-              <div>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Enter project name"
-                    name="name"
-                  />
+              <div className="modal-body">
+                <div className="form-group">
+                  <label htmlFor="name">
+                    Name
+                    <input
+                      type="text"
+                      placeholder="Enter project name"
+                      name="name"
+                      id="name"
+                      className="form-control"
+                      value={this.state.Name}
+                      onChange={this.handleNameChange}
+                    />
+                  </label>
                 </div>
-
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Enter project url"
-                    name="url"
-                  />
+                <div className="form-group">
+                  <label htmlFor="url">
+                    URL
+                    <input
+                      type="text"
+                      placeholder="Enter project url"
+                      name="url"
+                      id="url"
+                      className="form-control"
+                      value={this.state.Url}
+                      onChange={this.handleUrlChange}
+                    />
+                  </label>
                 </div>
-
-                <div>
-                  <div>
-                    <select name="freq_id">
+                <div className="form-group">
+                  <label htmlFor="freq_id">
+                    Frequency
+                    <select
+                      name="freq_id"
+                      id="freq_id"
+                      className="form-control"
+                      value={this.state.Freq}
+                      onChange={this.handleFreqChange}
+                      onBlur={this.handleFreqChange}
+                    >
                       <option value="0">Manual</option>
-                      <option value="1">On Commit</option>
-                      <option value="2">Daily</option>
-                      <option value="3">Weekly</option>
+                      <option value="1">Daily</option>
+                      <option value="2">Weekly</option>
                     </select>
-                  </div>
+                  </label>
                 </div>
               </div>
-              <div>
-                <button type="btn" data-dismiss="modal">
-                  Close
+              <div className="modal-footer">
+                <button
+                  type="btn"
+                  data-dismiss="modal"
+                  className="btn btn-default btn-large btn-wide"
+                  onClick={this.toggleModal}
+                >
+                  Cancel
                 </button>
-                <button>
-                  Sumbit <i />
+                <button
+                  type="btn"
+                  className="btn btn-large btn-xwide"
+                  onClick={this.submitForm}
+                >
+                  Submit
                 </button>
               </div>
             </form>

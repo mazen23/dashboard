@@ -9,7 +9,7 @@ class App extends React.Component {
       <div className="wrapper">
         <section className="head prim-color">
           <Link to="/" className="title">
-            Castle Dashboard
+            CASTLE Dashboard
           </Link>
         </section>
 

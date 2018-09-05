@@ -67,9 +67,7 @@ class Chart extends React.Component {
     return (
       <div style={{ padding: "10px" }}>
         <div className="chart_title">
-          <h3>
-            {num} {title}
-          </h3>
+          <h3>{title}</h3>
         </div>
         <PieChart width={180} height={180} style={{ margin: "10px" }}>
           <Pie

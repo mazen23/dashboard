@@ -16,6 +16,7 @@ body {
   height: 100%;
   grid-template-rows: auto 1fr auto;
   background-color: rgb(243, 243, 244);
+  min-height: 100vh;
 }
 
 .head {
@@ -85,6 +86,25 @@ body {
   padding: 0.2em 0.8em;
 }
 
+.btn-default {
+  background-color: white;
+  color: rgb(103, 106, 108);
+  border-color: rgb(194, 196, 197);
+}
+
+.btn-default:hover {
+  border-color: rgb(149, 149, 150);
+  background-color: white;
+}
+
+.btn-wide {
+  padding: 0.5em 3em;
+}
+
+.btn-xwide {
+  padding: 0.5em 5em;
+}
+
 .project_name {
   text-decoration: none !important;
   color: black !important;
@@ -119,31 +139,71 @@ body {
 }
 
 #modal {
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.4);
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   top: 0;
   z-index: 10;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 #modal:empty {
   display: none;
 }
 
-#modal > div {
-  background-color: white;
-  max-width: 500px;
-  padding: 15px;
-  border-radius: 5px;
-  text-align: center;
-}
-
-#modal .buttons button {
+#modal .btn {
   display: inline-block;
   margin-right: 15px;
+}
+
+.modal-content {
+  margin: 50px auto;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  padding: 0px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  background-color: white;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.modal-header {
+  padding: 30px 100px;
+  text-align: center;
+  border-bottom: 1px solid rgb(229, 229, 229);
+  color: rgb(103, 106, 108);
+}
+
+.modal-body {
+  background-color: rgb(248, 250, 251);
+  padding: 20px 30px 30px;
+  display: grid;
+  grid-gap: 30px;
+  color: rgb(103, 106, 108);
+}
+
+.modal-footer {
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid rgb(229, 229, 229);
+}
+
+.modal-title {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.43;
+}
+.form-group {
+}
+
+.form-control {
+  display: block;
+  padding: 6px 12px;
+  width: 100%;
+  margin-top: 10px;
 }

@@ -16,7 +16,7 @@ const projectSchema = mongoose.Schema(
 );
 
 projectSchema.virtual("frequency").get(function() {
-  const freqs = ["Manual", "OnCommit", "Daily", "Weekly"];
+  const freqs = ["Manual", "Daily", "Weekly"];
   return freqs[this.freq_id];
 });
 

@@ -5,6 +5,7 @@ class Modal extends React.Component {
   constructor(props) {
     super(props);
     this.el = document.createElement("div");
+    this.el.className = "modal-content";
     this.modalRoot = document.getElementById("modal");
   }
 
