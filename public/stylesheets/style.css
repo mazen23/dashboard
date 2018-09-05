@@ -62,6 +62,8 @@ body {
 
 .content-head {
   padding: 30px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .btn {

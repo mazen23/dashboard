@@ -6,17 +6,15 @@ import Chart from "./Chart";
 import Modal from "./Modal";
 
 class Projects extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      data: [],
-      loading: true,
-      showModal: false,
-      Freq: 0,
-      Url: "",
-      Name: ""
-    };
-  }
+  state = {
+    data: [],
+    loading: true,
+    showModal: false,
+    Freq: 0,
+    Url: "",
+    Name: ""
+  };
+
   componentDidMount() {
     this.updateTable();
   }

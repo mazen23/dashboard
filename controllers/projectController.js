@@ -27,6 +27,7 @@ exports.project_list = function(req, res) {
 exports.project_detail = function(req, res) {
   const id = req.params.ProjectId;
   ProjectData.findById(id)
+    .populate("report_id")
     .exec()
     .then(doc => {
       if (doc) {
