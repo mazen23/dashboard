@@ -15,7 +15,6 @@ class App extends React.Component {
 
         <Router>
           <Projects path="/" />
-          <Projects path="/projects" />
           <Project path="/projects/:projectId" />
         </Router>
 

@@ -3,13 +3,15 @@ import ReactTable from "react-table";
 import { Link } from "@reach/router";
 import axios from "axios";
 import Chart from "./Chart";
+import Modal from "./Modal";
 
 class Projects extends React.Component {
   constructor() {
     super();
     this.state = {
       data: [],
-      loading: true
+      loading: true,
+      showModal: false
     };
   }
   componentDidMount() {
@@ -21,16 +23,17 @@ class Projects extends React.Component {
       });
     });
   }
+
+  toggleModal = () => this.setState({ showModal: !this.state.showModal });
   render() {
-    const { data, loading } = this.state;
+    const { data, loading, showModal } = this.state;
     return (
       <section className="content">
         <div className="content-head left-content">
           <button
             type="button"
             className="btn btn-large"
-            data-toggle="modal"
-            data-target="#addProjectModal"
+            onClick={this.toggleModal}
           >
             Add Project
           </button>
@@ -66,7 +69,7 @@ class Projects extends React.Component {
                 accessor: "updated"
               },
               {
-                Header: "Tests Status",
+                Header: "Report Status",
                 accessor: "status",
                 Cell: row => {
                   return row.original.report_id ? (
@@ -75,29 +78,52 @@ class Projects extends React.Component {
                         width: "100%",
                         height: "100%",
                         backgroundColor: "#dadada",
-                        borderRadius: "2px"
+                        display: "flex"
                       }}
+                      title={{${row.original.report_id.num_ok_perc}%}}
                     >
                       <div
                         style={{
                           display: "inline-block",
                           width: `${row.original.report_id.num_ok_perc}%`,
                           height: "100%",
-                          backgroundColor: "#00ff00",
-                          borderRadius: "2px",
+                          backgroundColor: "#1add1a",
                           transition: "all .2s ease-out"
                         }}
-                      />
+                        className="hover_show"
+                      >
+                        <p className="hover_show_content">
+                          {row.original.report_id.num_ok_perc}%
+                        </p>
+                      </div>
                       <div
                         style={{
                           display: "inline-block",
                           width: `${row.original.report_id.num_nok_perc}%`,
                           height: "100%",
-                          backgroundColor: "#ff0000",
-                          borderRadius: "2px",
+                          backgroundColor: "#dd1a1a",
                           transition: "all .2s ease-out"
                         }}
-                      />
+                        className="hover_show"
+                      >
+                        <p className="hover_show_content">
+                          {row.original.report_id.num_nok_perc}%
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          display: "inline-block",
+                          width: `${row.original.report_id.num_np_perc}%`,
+                          height: "100%",
+                          backgroundColor: "#dadada",
+                          transition: "all .2s ease-out"
+                        }}
+                        className="hover_show"
+                      >
+                        <p className="hover_show_content">
+                          {row.original.report_id.num_nok_perc}%
+                        </p>
+                      </div>
                     </div>
                   ) : (
                     <div
@@ -180,6 +206,54 @@ class Projects extends React.Component {
             }}
           />
         </div>
+        {showModal ? (
+          <Modal>
+            <form action="/api/projects/" method="post" id="addProjectForm">
+              <div>
+                <h4>Add Project</h4>
+                <button type="button" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div>
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Enter project name"
+                    name="name"
+                  />
+                </div>
+
+                <div>
+                  <input
+                    type="text"
+                    placeholder="Enter project url"
+                    name="url"
+                  />
+                </div>
+
+                <div>
+                  <div>
+                    <select name="freq_id">
+                      <option value="0">Manual</option>
+                      <option value="1">On Commit</option>
+                      <option value="2">Daily</option>
+                      <option value="3">Weekly</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <button type="btn" data-dismiss="modal">
+                  Close
+                </button>
+                <button>
+                  Sumbit <i />
+                </button>
+              </div>
+            </form>
+          </Modal>
+        ) : null}
       </section>
     );
   }

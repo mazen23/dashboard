@@ -3,7 +3,7 @@ const router = express.Router();
 
 import fs from "fs";
 
-router.get("/projects", function(req, res, next) {
+router.get("/", function(req, res, next) {
   response.writeHead(200, { "Content-Type": "text/html" });
   fs.readFile("dist/index.html", null, function(error, data) {
     if (error) {
@@ -14,10 +14,6 @@ router.get("/projects", function(req, res, next) {
     }
     response.end();
   });
-});
-
-router.get("/", function(req, res, next) {
-  res.redirect("/projects");
 });
 
 module.exports = router;
