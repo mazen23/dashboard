@@ -1,33 +1,23 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const ProjectData = require('../models/project')
+import fs from "fs";
 
-router.get('/projects', function (req, res, next) {
-  ProjectData.find()
-    .then(function (doc) {
-      res.render('index', { projects: doc })
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({
-        error: err
-      });
-    });
-});
-
-router.get('/', function (req, res, next) {
-  res.redirect('/projects');
-});
-
-router.get('/projects/:projectId', function (req, res, next) {
-  ProjectData.findById(req.params.projectId, (err, project) => {
-    if (err) {
-      console.log(err);
-      return res.status(500).json({ error: err });
+router.get("/projects", function(req, res, next) {
+  response.writeHead(200, { "Content-Type": "text/html" });
+  fs.readFile("dist/index.html", null, function(error, data) {
+    if (error) {
+      response.writeHead(404);
+      response.write("File not found!");
+    } else {
+      response.write(data);
     }
-    res.render('project', {project :project});
+    response.end();
   });
+});
+
+router.get("/", function(req, res, next) {
+  res.redirect("/projects");
 });
 
 module.exports = router;
