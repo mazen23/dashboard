@@ -1,9 +1,9 @@
 const ProjectData = require("../models/project");
 const http = require("http");
 const kue = require("kue");
-const queue = kue.createQueue();
+const queue = kue.createQueue({ disableSearch: false });
 
-exports.project_list = function(req, res) {
+exports.project_list = (req, res) => {
   ProjectData.find()
     .populate("report_id")
     .sort({ _id: -1 })
@@ -24,7 +24,7 @@ exports.project_list = function(req, res) {
     });
 };
 
-exports.project_detail = function(req, res) {
+exports.project_detail = (req, res) => {
   const id = req.params.ProjectId;
   ProjectData.findById(id)
     .populate("report_id")
@@ -44,7 +44,7 @@ exports.project_detail = function(req, res) {
     });
 };
 
-exports.project_create = function(req, res) {
+exports.project_create = (req, res) => {
   const Project = new ProjectData({
     proj_name: req.body.name,
     freq_id: req.body.freq_id,
@@ -65,7 +65,7 @@ exports.project_create = function(req, res) {
     });
 };
 
-exports.project_patch = function(req, res) {
+exports.project_patch = (req, res) => {
   const id = req.params.ProjectId;
   const updateOps = {};
   for (const ops of req.body) {
@@ -87,7 +87,7 @@ exports.project_patch = function(req, res) {
     });
 };
 
-exports.project_delete = function(req, res) {
+exports.project_delete = (req, res) => {
   const id = req.params.ProjectId;
   ProjectData.remove({ _id: id })
     .exec()
@@ -104,52 +104,189 @@ exports.project_delete = function(req, res) {
 
 exports.project_run = (req, res) => {
   var job = queue
-    .create("Report Generation", {
+    .create("Run Project", {
       title: req.params.ProjectName
     })
+    .searchKeys(["title"])
     .save(function(err) {
       if (err) {
         res.status(500).json({
           error: err
         });
       } else {
-        console.log(job.id);
+        res.status(200).json({ job: job.id });
+      }
+    });
+};
+
+exports.project_generate = (req, res) => {
+  var job = queue
+    .create("Report Generation", {
+      projectName: req.body.ProjectName,
+      svnUrl: req.body.SvnUrl
+    })
+    .searchKeys(["projectName"])
+    .save(function(err) {
+      if (err) {
+        res.status(500).json({
+          error: err
+        });
+      } else {
+        res.status(200).json({ job: job.id });
       }
     });
 
-  job
-    .on("complete", function(result) {
-      console.log("Job completed with data ", result);
-    })
-    .on("failed attempt", function(errorMessage, doneAttempts) {
-      console.log("Job failed");
-    })
-    .on("failed", function(errorMessage) {
-      console.log("Job failed");
-    })
-    .on("progress", function(progress, data) {
-      console.log(
-        "\r  job #" + job.id + " " + progress + "% complete with data ",
-        data
-      );
-    });
-  res.sendStatus(200);
+  job.on("complete", function(result) {
+    console.log("Job completed with data ", result);
+  });
 };
 
-exports.project_generate = (req, res) => {};
+exports.project_generate = (req, res) => {
+  var job = queue
+    .create("Project Update", {
+      projectName: req.body.ProjectName,
+      svnUrl: req.body.SvnUrl
+    })
+    .searchKeys(["projectName"])
+    .save(function(err) {
+      if (err) {
+        res.status(500).json({
+          error: err
+        });
+      } else {
+        res.status(200).json({ job: job.id });
+      }
+    });
+
+  job.on("complete", function(result) {
+    console.log("Job completed with data ", result);
+  });
+};
+
+exports.project_job_list = (req, res) => {
+  const arr = JSON.parse(req.params.JobIdList);
+  let JobIdList = [];
+  arr.forEach((id, index) => {
+    kue.Job.get(id, (err, job) => {
+      JobIdList.push(job);
+      if (JobIdList.length === arr.length)
+        res.status(200).json({ jobs: JobIdList });
+    });
+  });
+};
+
+exports.project_job = (req, res) => {
+  kue.Job.get(req.params.JobId, (err, job) => {
+    res.status(200).json({ job: job });
+  });
+};
+
+queue.process("Project Update", (job, done) => {
+  const path =
+    "http://cai1-sv00075:8080/blue/rest/organizations/jenkins/pipelines/UpdateProject/runs/";
+  const postData = JSON.stringify({
+    parameters: [
+      {
+        name: "PROJECT_NAME",
+        value: job.data.projectName
+      },
+      {
+        name: "SVN_URL",
+        value: job.data.svnUrl
+      }
+    ]
+  });
+  const optionsPost = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+  const optionsGet = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+
+  const next = (error, result) => {
+    if (error) done(error);
+    else {
+      const link = "http://cai1-sv00075:8080" + result._links.self.href;
+      if (result.state === "QUEUED" || result.state === "RUNNING") {
+        send_request(link, "", optionsGet, next);
+      } else if (result.state === "FINISHED") {
+        if (result.result === "FAILURE")
+          done({ error: `JENKINS JOB ${result.id} FAILED` }, result);
+        else done(null, result);
+      } else {
+        done({ error: "undefined state" });
+      }
+    }
+  };
+  send_request(path, postData, optionsPost, next);
+});
 
 queue.process("Report Generation", (job, done) => {
-  console.log("job data", job.data);
-  // Do your task here
-
-  const name = job.data.title;
   const path =
     "http://cai1-sv00075:8080/blue/rest/organizations/jenkins/pipelines/GenerateProject/runs/";
   const postData = JSON.stringify({
     parameters: [
       {
         name: "PROJECT_NAME",
-        value: name
+        value: job.data.projectName
+      },
+      {
+        name: "JOB_ID",
+        value: job.id
+      },
+      {
+        name: "SVN_URL",
+        value: job.data.svnUrl
+      }
+    ]
+  });
+  const optionsPost = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+  const optionsGet = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+
+  const next = (error, result) => {
+    if (error) done(error);
+    else {
+      const link = "http://cai1-sv00075:8080" + result._links.self.href;
+      if (result.state === "QUEUED" || result.state === "RUNNING") {
+        send_request(link, "", optionsGet, next);
+      } else if (result.state === "FINISHED") {
+        if (result.result === "FAILURE")
+          done({ error: `JENKINS JOB ${result.id} FAILED` }, result);
+        else done(null, result);
+      } else {
+        done({ error: "undefined state" });
+      }
+    }
+  };
+  send_request(path, postData, optionsPost, next);
+});
+
+queue.process("Run Project", (job, done) => {
+  console.log("job data", job.data);
+
+  const path =
+    "http://cai1-sv00075:8080/blue/rest/organizations/jenkins/pipelines/RunProject/runs/";
+  const postData = JSON.stringify({
+    parameters: [
+      {
+        name: "PROJECT_NAME",
+        value: job.data.title
       }
     ]
   });
@@ -186,12 +323,23 @@ queue.process("Report Generation", (job, done) => {
   request.end();
 });
 
-queue
-  .on("job enqueue", function(id, type) {
-    console.log("Job %s got queued of type %s", id, type);
-  })
-  .on("job complete", function(id, result) {
-    kue.Job.get(id, function(err, job) {
-      console.log("Job %s got completed ", id);
+const send_request = (path, postData, options, next) => {
+  const request = http.request(path, options, response => {
+    response.setEncoding("utf8");
+    let str = "";
+    response.on("data", function(chunk) {
+      str += chunk;
+    });
+    response.on("end", function() {
+      next(null, JSON.parse(str));
     });
   });
+
+  request.on("error", e => {
+    next(e, null);
+  });
+
+  request.write(postData);
+
+  request.end();
+};
