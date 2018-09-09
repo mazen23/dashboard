@@ -24,7 +24,10 @@ class Projects extends React.Component {
     axios.get("/api/projects").then(response => {
       this.setState({
         data: response.data.data,
-        loading: false
+        loading: false,
+        Freq: 0,
+        Url: "",
+        Name: ""
       });
     });
   };
@@ -60,16 +63,26 @@ class Projects extends React.Component {
       })
       .then(response => {
         console.log(response);
+        axios
+          .post("/api/projects/update", {
+            ProjectName: this.state.Name,
+            SvnUrl: this.state.Url,
+            ProjectId: response.data.createdProject._id
+          })
+          .then(response => {
+            console.log(response);
+            this.updateTable();
+          })
+          .catch(error => {
+            console.log(error);
+          });
         this.updateTable();
       })
       .catch(error => {
         console.log(error);
       });
     this.setState({
-      showModal: !this.state.showModal,
-      Freq: 0,
-      Url: "",
-      Name: ""
+      showModal: !this.state.showModal
     });
   };
 

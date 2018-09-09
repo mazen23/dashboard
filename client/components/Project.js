@@ -66,6 +66,22 @@ class Project extends React.Component {
       });
   };
 
+  updateProject = e => {
+    axios
+      .post("/api/projects/update", {
+        ProjectName: this.state.data.proj_name,
+        SvnUrl: this.state.data.svn_url,
+        ProjectId: this.state.data._id
+      })
+      .then(response => {
+        console.log(response);
+        this.updateJobs(this.state.data.proj_name);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   render() {
     return this.state.loading ? (
       <section className="content">
@@ -78,6 +94,13 @@ class Project extends React.Component {
         <div className="content-head">
           <h1 className="prim-color">{this.state.data.proj_name}</h1>
           <div className="btn-holder">
+            <button
+              type="button"
+              className="btn btn-large"
+              onClick={this.updateProject}
+            >
+              Update
+            </button>
             <button
               type="button"
               className="btn btn-large"
@@ -147,7 +170,9 @@ class Project extends React.Component {
                           target="_blank"
                           href={`http://cai1-sv00075/castle/vis/vls/dashboard/${
                             this.state.data.proj_name
-                          }/${job.id}/dashboard.html`}
+                          }/${
+                            job.type === "Project Update" ? "original" : job.id
+                          }/dashboard.html`}
                         >
                           complete
                         </a>

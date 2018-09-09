@@ -7,6 +7,8 @@ router.get("/", project_controller.project_list);
 
 router.post("/", project_controller.project_create);
 
+router.post("/report/:ProjectId", project_controller.project_report_add);
+
 router.get("/:ProjectId", project_controller.project_detail);
 
 router.get("/jobs/:JobIdList", project_controller.project_job_list);
@@ -17,7 +19,7 @@ router.patch("/:ProjectId", project_controller.project_patch);
 
 router.delete("/:ProjectId", project_controller.project_delete);
 
-router.post("/update/:ProjectName", project_controller.project_update);
+router.post("/update", project_controller.project_update);
 
 router.post("/run", project_controller.project_run);
 
