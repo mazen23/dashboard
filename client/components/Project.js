@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
 import Chart from "./Chart";
+import prettyMs from "pretty-ms";
+import datetime from "node-datetime";
 
 class Project extends React.Component {
   state = {
@@ -92,38 +94,48 @@ class Project extends React.Component {
     ) : (
       <section className="content">
         <div className="content-head">
-          <h1 className="prim-color">{this.state.data.proj_name}</h1>
-          <div className="btn-holder">
+          <div>
+            <h1 className="prim-color text-uppercase">
+              {this.state.data.proj_name}
+            </h1>
+            {this.state.data.report_id ? (
+              <a
+                target="_blank"
+                href={`http://cai1-sv00075/castle/vis/vls/dashboard/${
+                  this.state.data.proj_name
+                }/original/dashboard.html`}
+              >
+                <i class="fas fa-link text-sucess fa-2x" />
+              </a>
+            ) : null}
+          </div>
+          <div class="btn-group" role="group" aria-label="Basic example">
             <button
               type="button"
-              className="btn btn-large"
+              class="btn btn-success"
               onClick={this.updateProject}
             >
               Update
             </button>
             <button
               type="button"
-              className="btn btn-large"
+              class="btn btn-success"
               onClick={this.generateProject}
             >
               Generate
             </button>
             <button
               type="button"
-              className="btn btn-large btn-default"
+              class="btn btn-success"
               onClick={this.runProject}
             >
               Run
             </button>
           </div>
         </div>
-        <div className="project-desc">
-          <div>
-            <div>Last Update : {this.state.data.updated}</div>
-            <div>URL : {this.state.data.url}</div>
-            <div>Frequency : {this.state.data.frequency}</div>
-          </div>
-          {this.state.data.report_id ? (
+
+        {this.state.data.report_id ? (
+          <div className="project-desc">
             <div className="row">
               <Chart
                 title="Features"
@@ -147,24 +159,47 @@ class Project extends React.Component {
                 numNp={this.state.data.report_id.num_np}
               />
             </div>
-          ) : (
-            <div className="row">
-              <h2>No Report Exists</h2>
-            </div>
-          )}
-        </div>
-        <div className="desc-content">
-          {this.state.jobs.map((job, index) => {
-            return (
-              <div className="job-content">
-                <table className="meta">
-                  <th>
-                    <td>Title:</td>
-                    <td>Type:</td>
-                    <td>Type:</td>
-                  </th>
+          </div>
+        ) : null}
+        <div className="table-responsive">
+          <table className="table table-hover">
+            <thead className="thead-light">
+              <tr>
+                <th scope="col" className="fit">
+                  status
+                </th>
+                <th scope="col">RUN</th>
+                <th scope="col">TYPE</th>
+                <th scope="col">COMPLETED</th>
+                <th scope="col">DURATION</th>
+                <th scope="col" className="fit" />
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.jobs.map((job, index) => {
+                console.log(job);
+                return (
                   <tr>
+                    <th scope="row" className="fit">
+                      {job.state === "complete" ? (
+                        <i class="fas fa-check-circle text-success fa-2x" />
+                      ) : job.state === "active" ? (
+                        <i class="fas fa-spinner fa-pulse fa-2x fa-fw  text-info" />
+                      ) : job.state === "inactive" ? (
+                        <i class="fas fa-minus-circle text-secondary fa-2x" />
+                      ) : (
+                        <i class="fas fa-times-circle text-danger fa-2x" />
+                      )}
+                    </th>
+                    <td>{job.id}</td>
+                    <td>{job.type}</td>
+                    <td>{new Date(+job.updated_at).toDateString}</td>
                     <td>
+                      {job.state === "complete"
+                        ? prettyMs(+job.duration)
+                        : "..."}
+                    </td>
+                    <td className="fit">
                       {job.state === "complete" ? (
                         <a
                           target="_blank"
@@ -174,23 +209,17 @@ class Project extends React.Component {
                             job.type === "Project Update" ? "original" : job.id
                           }/dashboard.html`}
                         >
-                          complete
+                          <i class="fas fa-file-alt text-primary fa-2x" />
                         </a>
-                      ) : job.state === "active" ? (
-                        <span>active</span>
-                      ) : job.state === "inactive" ? (
-                        <span>inactive</span>
                       ) : (
-                        <span>failed</span>
+                        <i class="fas fa-file-alt text-muted fa-2x" />
                       )}
                     </td>
-                    <td>{job.type}</td>
-                    <td>↻</td>
                   </tr>
-                </table>
-              </div>
-            );
-          })}
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </section>
     );
