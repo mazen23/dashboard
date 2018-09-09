@@ -242,3 +242,8 @@ td {
   white-space: nowrap;
   width: 1%;
 }
+
+a.title:hover {
+  text-decoration: none;
+  color: #1ab394;
+}

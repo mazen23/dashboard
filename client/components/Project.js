@@ -18,9 +18,18 @@ class Project extends React.Component {
           data: response.data,
           loading: false
         },
-        this.updateJobs(response.data.proj_name)
+        this.startPolling(response.data.proj_name)
       );
     });
+  }
+
+  startPolling = projName => {
+    this.updateJobs(projName);
+    this.timer = setInterval(() => this.updateJobs(projName), 1000);
+  };
+
+  componentWillUnmount() {
+    this.timer = null;
   }
 
   updateJobs = name => {
@@ -35,7 +44,6 @@ class Project extends React.Component {
         axios
           .get(`/api/projects/jobs/[${response.data.toString()}]`)
           .then(resp => {
-            console.log(resp);
             this.setState({ jobs: resp.data.jobs });
           });
       });
@@ -45,7 +53,6 @@ class Project extends React.Component {
     axios
       .post(`/api/projects/run/${this.state.data.proj_name}`, {})
       .then(response => {
-        console.log(response);
         this.updateJobs(this.state.data.proj_name);
       })
       .catch(error => {
@@ -60,7 +67,6 @@ class Project extends React.Component {
         SvnUrl: this.state.data.svn_url
       })
       .then(response => {
-        console.log(response);
         this.updateJobs(this.state.data.proj_name);
       })
       .catch(error => {
@@ -76,7 +82,6 @@ class Project extends React.Component {
         ProjectId: this.state.data._id
       })
       .then(response => {
-        console.log(response);
         this.updateJobs(this.state.data.proj_name);
       })
       .catch(error => {
@@ -95,7 +100,7 @@ class Project extends React.Component {
       <section className="content">
         <div className="content-head">
           <div>
-            <h1 className="prim-color text-uppercase">
+            <h1 className="prim-color text-uppercase title_link">
               {this.state.data.proj_name}
             </h1>
             {this.state.data.report_id ? (
